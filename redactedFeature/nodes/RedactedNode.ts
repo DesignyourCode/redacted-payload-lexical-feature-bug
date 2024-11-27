@@ -1,52 +1,38 @@
-import { ElementNode, LexicalEditor, $applyNodeReplacement, createCommand, DOMConversionMap, DOMConversionOutput, DOMExportOutput } from 'lexical'
-import { createElement } from 'react'
+import { ElementNode, LexicalEditor, $applyNodeReplacement, createCommand } from 'lexical'
 
-export const INSERT_REDACTED_COMMAND = createCommand<null>('INSERT_REDACTED_COMMAND')
+export const INSERT_REDACTED_COMMAND = createCommand('INSERT_REDACTED_COMMAND')
 
 export class RedactedNode extends ElementNode {
-  static getType(): string {
+  static getType() {
     return 'redacted'
   }
 
-  static clone(node: RedactedNode): RedactedNode {
+  static clone(node: RedactedNode) {
     return new RedactedNode(node.__key)
   }
 
-  createDOM(config: any): HTMLElement {
-    return <span className="redacted"></span>
+  createDOM(config: any) {
+    const element = document.createElement('span')
+    element.className = 'redacted'
+    return element
   }
 
-  updateDOM(prevNode: RedactedNode, dom: HTMLElement): boolean {
+  updateDOM(prevNode: RedactedNode, dom: HTMLElement) {
     return false
   }
 
-  exportJSON(): { type: string; version: number } {
+  exportJSON() {
     return {
       type: 'redacted',
       version: 1,
     }
   }
-
-  static importDOM(): DOMConversionMap | null {
-    return {
-      span: (node: Node) => ({
-        conversion: () => ({
-          node: $createRedactedNode(),
-        }),
-        priority: 0,
-      }),
-    }
-  }
-
-  exportDOM(): DOMExportOutput {
-    return { element: this.createDOM(null) }
-  }
 }
 
-export function $createRedactedNode(): RedactedNode {
+export function $createRedactedNode() {
   return $applyNodeReplacement(new RedactedNode())
 }
 
-export function $isRedactedNode(node: any): node is RedactedNode {
+export function $isRedactedNode(node: any) {
   return node instanceof RedactedNode
 }
